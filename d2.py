@@ -1,4 +1,4 @@
-reports = [[int(level) for level in line.strip().split()] for line in open('d1.in').readlines()]
+reports = [[int(level) for level in line.strip().split()] for line in open('d2.in').readlines()]
 
 
 def is_safe(report):
