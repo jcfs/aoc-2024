@@ -1,4 +1,3 @@
-from concurrent.futures import ProcessPoolExecutor
 from copy import deepcopy
 
 g = [list(line.strip()) for line in open('d6.in')]

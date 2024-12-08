@@ -1,5 +1,3 @@
-from itertools import product
-
 input = """
 190: 10 19
 3267: 81 40 27
@@ -16,28 +14,33 @@ input = open('d7.in').read()
 equations = [rule.split(': ') for rule in input.strip().split("\n")]
 equations = [(int(k), list(map(int, v.split()))) for k, v in equations]
 
-def calculate_result(list_ints, target, ops):
-    def apply_ops(ops_comb, nums):
-        result = nums[0]
-        for op, num in zip(ops_comb, nums[1:]):
-            if op == "+":
-                result += num
-            elif op == "*":
-                result *= num
-            elif op == "||":
-                result = int(f"{result}{num}")
-                
-            if result > target:
-                return result
-        return result
+def calculate_result(list_ints, target, ops, result=0):
+    if not list_ints:
+        return result if result == target else None
 
-    combinations = product(ops, repeat=len(list_ints) - 1)
-    return any(apply_ops(comb, list_ints) == target for comb in combinations)
+    a = list_ints[0]
+    for op in ops:
+        new_result = result
+        if op == "+":
+            new_result += a
+        elif op == "*":
+            new_result = new_result * a if new_result != 0 else a
+        elif op == "||":
+            new_result = int(f"{new_result}{a}")
+
+        res = calculate_result(list_ints[1:], target, ops, new_result)
+        if res is not None:
+            return res
+
+    return None
 
 
 def solve(ops):
-    total = sum(k for k, v in equations if calculate_result(v, k, ops))
-    print(total)
+    sum = 0
+    for k, v in equations:
+        if calculate_result(v, k, ops):
+            sum += k
+    print(sum)
 
 solve(["+", "*"])
 solve(["+", "*", "||"])
