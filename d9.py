@@ -1,4 +1,5 @@
 from collections import defaultdict
+from itertools import zip_longest
 
 input = """
 2333133121414131402
@@ -8,65 +9,15 @@ input = open("d9.in").read().strip()
 #input = input.strip()
 
 def parse_to_list_of_blocks(disk):
-    segments = list(map(int, disk))
+    digits = map(int, disk)
     blocks = []
-    file_id = 0
-    is_file = True
-    for length in segments:
-        if is_file:
-            for _ in range(length):
-                blocks.append(str(file_id))
-            file_id += 1
-        else:
-            for _ in range(length):
-                blocks.append('.')
-        is_file = not is_file
-
+    for idx, (file, empty) in enumerate(zip_longest(*[iter(digits)]*2, fillvalue=0)):
+        blocks.extend([idx] * file)
+        blocks.extend(['.'] * empty)
+    
     return blocks
 
-    
-def part1():
-    blocks = parse_to_list_of_blocks(input)
-
-    contiguous_ids = defaultdict(list)
-    for i, block in enumerate(blocks):
-        if block != '.':
-            contiguous_ids[block].append(i)
-
-    first_free_space = 0
-    for k, v in reversed(contiguous_ids.items()):  
-        seen_dot = False
-        over = True
-        for x in blocks:
-            if x == '.':
-                seen_dot = True
-            if seen_dot and x != '.':
-                over = False
-                break
-
-        if over:
-            break   
-
-        for id in v:
-            while blocks[first_free_space] != '.':
-                first_free_space += 1
-
-            blocks[first_free_space] = k
-            blocks[id] = '.'
-
-            first_free_space += 1
-
-
-    checksum = 0
-    for i, blk in enumerate(blocks):
-        if blk != '.':
-            checksum += i * int(blk)
-    print(checksum)
-
-
-def part2():
-    blocks = parse_to_list_of_blocks(input)
-
+def get_contigous_free_space(blocks):
     contiguous_free_space = []
     start = None
     for i, block in enumerate(blocks):
@@ -80,14 +31,46 @@ def part2():
     if start is not None:
         contiguous_free_space.append((start, len(blocks) - start))
 
+    return contiguous_free_space
+
+def get_contigous_ids(blocks):
     contiguous_ids = defaultdict(list)
     for i, block in enumerate(blocks):
         if block != '.':
             contiguous_ids[block].append(i)
+    return contiguous_ids
 
-    sorted_files = sorted(contiguous_ids.items(), key=lambda x: int(x[0]), reverse=True)
+def checksum(blocks):
+    return sum(i * int(blk) for i, blk in enumerate(blocks) if blk != '.')
+    
+def part1():
+    blocks = parse_to_list_of_blocks(input)
+    contiguous_ids = get_contigous_ids(blocks)
 
-    for k, v in sorted_files:
+    first_free_space = 0
+    for k, v in reversed(contiguous_ids.items()):  
+        if all(b == '.' for b in blocks[blocks.index('.'):]):
+            break
+
+        for id in v:
+            while blocks[first_free_space] != '.':
+                first_free_space += 1
+
+            blocks[first_free_space] = k
+            blocks[id] = '.'
+
+            first_free_space += 1
+
+    print(checksum(blocks))
+
+
+def part2():
+    blocks = parse_to_list_of_blocks(input)
+
+    contiguous_free_space = get_contigous_free_space(blocks)
+    contiguous_ids = get_contigous_ids(blocks)
+
+    for k, v in reversed(contiguous_ids.items()):
         needed_free_space = len(v)
         file_start = min(v)  
 
@@ -100,18 +83,15 @@ def part2():
 
                 new_start = run_start + needed_free_space
                 new_length = length - needed_free_space
+                
                 if new_length > 0:
                     contiguous_free_space[i] = (new_start, new_length)
                 else:
                     contiguous_free_space.pop(i)
-
                 break
 
-    checksum = 0
-    for i, blk in enumerate(blocks):
-        if blk != '.':
-            checksum += i * int(blk)
-    print(checksum)
+    print(checksum(blocks))
+
 
 part1()
 part2()
