@@ -117,23 +117,6 @@ def part2():
                 else:
                     contiguous_free_space.pop(i)
 
-                old_file_run_start = min(v)
-                old_file_run_end = max(v) + 1
-                contiguous_free_space.append((old_file_run_start, old_file_run_end - old_file_run_start))
-
-                contiguous_free_space.sort(key=lambda x: x[0])
-                merged = []
-                cur_start, cur_len = contiguous_free_space[0]
-                cur_end = cur_start + cur_len
-                for s, l in contiguous_free_space[1:]:
-                    e = s + l
-                    if s <= cur_end:  
-                        cur_end = max(cur_end, e)
-                    else:
-                        merged.append((cur_start, cur_end - cur_start))
-                        cur_start, cur_end = s, e
-                merged.append((cur_start, cur_end - cur_start))
-                contiguous_free_space = merged
                 break
 
     checksum = 0
