@@ -28,17 +28,6 @@ def parse_to_list_of_blocks(disk):
 def part1():
     blocks = parse_to_list_of_blocks(input)
 
-    contiguous_free_space = []
-    start = None
-    for i, block in enumerate(blocks):
-        if block == '.':
-            if start is None:
-                start = i
-        else:
-            if start is not None:
-                contiguous_free_space.append((start, i - start))
-                start = None
-
     contiguous_ids = defaultdict(list)
     for i, block in enumerate(blocks):
         if block != '.':
@@ -64,7 +53,6 @@ def part1():
 
             blocks[first_free_space] = k
             blocks[id] = '.'
-
 
             first_free_space += 1
 
