@@ -12,7 +12,6 @@ input = """
 input = open('d10.in').read()
 grid = [list(map(int, line)) for line in input.strip().split('\n')]
 
-
 zeros = []
 nines = []
 for i in range(len(grid)):
@@ -30,13 +29,14 @@ def in_bounds(i, j):
 def bfs(grid, x, y, check_visited=False):
     queue = []
     visited = set()
-    queue.append((x, y, 0))
+    queue.append((x, y))
     visited.add((x, y))
     count = 0
 
     while queue:
-        i, j, idx = queue.pop(0)
+        i, j = queue.pop(0)
         for di, dj in directions:
+            idx = grid[i][j]
             ni, nj = i + di, j + dj
             if not in_bounds(ni, nj):
                 continue
@@ -50,17 +50,16 @@ def bfs(grid, x, y, check_visited=False):
             if grid[ni][nj] == 9:
                 count += 1
             
-            queue.append((ni, nj, idx + 1))
+            queue.append((ni, nj))
             visited.add((ni, nj))
 
     return count
-
 
 def part1():
     print(sum([bfs(grid, zero[0], zero[1], True) for zero in zeros]))
 
 def part2():
-    print(sum([bfs(grid, zero[0], zero[1], False) for zero in zeros]))
+    print(sum([bfs(grid, zero[0], zero[1]) for zero in zeros]))
 
 
 part1()
