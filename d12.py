@@ -63,15 +63,15 @@ def find_borders(grid, x, y, visited):
                 boundary_cells.add(n)
         print(boundary_cells)
         
-        cells_to_remove = set()
+        reduce = set()
         for cell in boundary_cells:
-            current_cell = (cell[0] + d[1], cell[1] + d[0])
-            while current_cell in boundary_cells:
-                cells_to_remove.add(current_cell)
-                current_cell = (current_cell[0] + d[1], current_cell[1] + d[0])
-        print(cells_to_remove)
+            perp_cell = (cell[0] + d[1], cell[1] + d[0])
+            while perp_cell in boundary_cells:
+                reduce.add(perp_cell)
+                perp_cell = (perp_cell[0] + d[1], perp_cell[1] + d[0])
+        print(reduce)
         
-        count += len(boundary_cells) - len(cells_to_remove)
+        count += len(boundary_cells) - len(reduce)
 
     area = len(region_cells)
     return area, count
