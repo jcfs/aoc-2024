@@ -54,6 +54,8 @@ def part2():
                     found = True
                     break
             if found:
+                for y in range(H):
+                    print(''.join('#' if grid[y][x] > 0 else '.' for x in range(W)))
                 break
 
     pass
