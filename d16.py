@@ -1,5 +1,4 @@
 import heapq
-from collections import defaultdict, deque
 
 directions = {
         0: (1, 0),   
@@ -45,45 +44,40 @@ def dijkstra(sx, sy):
                 predecessors[ny][nx][dir].append((x, y, dir))
                 heapq.heappush(heap, (new_cost, nx, ny, dir))
 
-        new_dir = (dir - 1) % 4
-        new_cost = cost + 1000
-        if new_cost <= min_cost[y][x][new_dir]:
-            min_cost[y][x][new_dir] = new_cost
-            predecessors[y][x][new_dir].append((x, y, dir))
-            heapq.heappush(heap, (new_cost, x, y, new_dir))
+        for new_dir in [(dir - 1) % 4, (dir + 1) % 4]:
+            new_cost = cost + 1000
+            if new_cost <= min_cost[y][x][new_dir]:
+                min_cost[y][x][new_dir] = new_cost
+                predecessors[y][x][new_dir].append((x, y, dir))
+                heapq.heappush(heap, (new_cost, x, y, new_dir))
 
-        new_dir = (dir + 1) % 4
-        new_cost = cost + 1000
-        if new_cost <= min_cost[y][x][new_dir]:
-            min_cost[y][x][new_dir] = new_cost
-            predecessors[y][x][new_dir].append((x, y, dir))
-            heapq.heappush(heap, (new_cost, x, y, new_dir))
 
     return min_cost, predecessors
 
-def backtrack(predecessors, min_cost, end_pos, best):
+def backtrack(predecessors, min_cost, end_pos):
     ex, ey = end_pos
+    best = min(min_cost[ey][ex])
 
     end_states = []
     for dir in range(4):
         if min_cost[ey][ex][dir] == best:
-            end_states.append( (ex, ey, dir) )
+            end_states.append((ex, ey, dir))
 
     best_path_tiles = set()
 
-    queue = deque()
+    queue = []
 
     for state in end_states:
         queue.append(state)
-        best_path_tiles.add( (state[0], state[1]) )
+        best_path_tiles.add((state[0], state[1]))
 
     visited = set(end_states)
 
     while queue:
-        x, y, dir = queue.popleft()
+        x, y, dir = queue.pop()
         for pred in predecessors[y][x][dir]:
             px, py, _ = pred
-            best_path_tiles.add( (px, py) )
+            best_path_tiles.add((px, py))
             if pred not in visited:
                 visited.add(pred)
                 queue.append(pred)
@@ -96,7 +90,7 @@ def part1():
 
 def part2():
     min_cost, predecessors = dijkstra(*start)
-    result = backtrack(predecessors, min_cost, end, min(min_cost[end[1]][end[0]]))
+    result = backtrack(predecessors, min_cost, end)
 
     def print_maze():
         for y, row in enumerate(maze):
@@ -107,7 +101,7 @@ def part2():
                     print(char, end='')
             print()
 
-    print_maze()
+    #print_maze()
 
     print(len(result))
 
