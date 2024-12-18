@@ -140,7 +140,6 @@ def find_initial_A(outputs):
             # final_B = B2 ^ 4
             final_B = B2 ^ 4
             
-            # Forward output is (final_B % 8)
             if (final_B % 8) == outputs[i]:
                 res = backtrack(i-1, A_i)
                 if res is not None:

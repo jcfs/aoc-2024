@@ -39,17 +39,21 @@ def dijkstra(sx, sy):
         nx, ny = x + dx, y + dy
         if 0 <= ny < height and 0 <= nx < width and maze[ny][nx] != '#':
             new_cost = cost + 1
-            if new_cost <= min_cost[ny][nx][dir]:
+            if new_cost < min_cost[ny][nx][dir]:
                 min_cost[ny][nx][dir] = new_cost
                 predecessors[ny][nx][dir].append((x, y, dir))
                 heapq.heappush(heap, (new_cost, nx, ny, dir))
+            elif new_cost == min_cost[ny][nx][dir]:
+                predecessors[ny][nx][dir].append((x, y, dir))   
 
         for new_dir in [(dir - 1) % 4, (dir + 1) % 4]:
             new_cost = cost + 1000
-            if new_cost <= min_cost[y][x][new_dir]:
+            if new_cost < min_cost[y][x][new_dir]:
                 min_cost[y][x][new_dir] = new_cost
                 predecessors[y][x][new_dir].append((x, y, dir))
                 heapq.heappush(heap, (new_cost, x, y, new_dir))
+            elif new_cost == min_cost[y][x][new_dir]:
+                predecessors[y][x][new_dir].append((x, y, dir))
 
 
     return min_cost, predecessors
@@ -96,12 +100,12 @@ def part2():
         for y, row in enumerate(maze):
             for x, char in enumerate(row):
                 if (x, y) in result:
-                    print('O', end='')
+                    print('\033[92mO\033[0m', end='')
                 else:
                     print(char, end='')
             print()
 
-    #print_maze()
+    print_maze()
 
     print(len(result))
 
