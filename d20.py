@@ -57,45 +57,48 @@ def best_savings(N):
     for (xr, xc) in start_reachable_cells:
         base_time = dist_start[xr][xc]  
         
-        ignore_dist = [[-1]*cols for _ in range(rows)]
-        ignore_dist[xr][xc] = 0
+        ignore_dist = {}
+        ignore_dist[(xr,xc)] = 0
+
         q = deque([(xr, xc)])
         
         while q:
             r, c = q.popleft()
-            steps = ignore_dist[r][c]
+            steps = ignore_dist[(r,c)]
             if steps == N:
                 continue  
             
             for dr, dc in dirs:
                 nr, nc = r+dr, c+dc
                 if 0 <= nr < rows and 0 <= nc < cols:
-                    if ignore_dist[nr][nc] == -1:
-                        ignore_dist[nr][nc] = steps + 1
+                    if (nr,nc) not in ignore_dist:
+                        ignore_dist[(nr,nc)] = steps + 1
                         q.append((nr, nc))
 
-        for yr in range(rows):
-            for yc in range(cols):
-                steps = ignore_dist[yr][yc]
-                if steps == -1 or steps == 0:
-                    continue
+        for k, v in ignore_dist.items():
+            yr = k[0]
+            yc = k[1]
+            steps = v
 
-                if (yr, yc) == end:
-                    cheated_time = base_time + steps
+            steps = ignore_dist[(yr,yc)]
+            if steps == -1 or steps == 0:
+                continue
+
+            if (yr, yc) == end:
+                cheated_time = base_time + steps
+                saving = normal_time - cheated_time
+                if saving > 0:
+                    cheat_key = ((xr,xc),(yr,yc))
+                    if cheat_key not in best_savings or best_savings[cheat_key] < saving:
+                        best_savings[cheat_key] = saving
+            else:
+                if dist_end[yr][yc] != -1:
+                    cheated_time = base_time + steps + dist_end[yr][yc]
                     saving = normal_time - cheated_time
                     if saving > 0:
                         cheat_key = ((xr,xc),(yr,yc))
                         if cheat_key not in best_savings or best_savings[cheat_key] < saving:
                             best_savings[cheat_key] = saving
-                else:
-                    if is_track(grid, yr, yc):
-                        if dist_end[yr][yc] != -1:
-                            cheated_time = base_time + steps + dist_end[yr][yc]
-                            saving = normal_time - cheated_time
-                            if saving > 0:
-                                cheat_key = ((xr,xc),(yr,yc))
-                                if cheat_key not in best_savings or best_savings[cheat_key] < saving:
-                                    best_savings[cheat_key] = saving
     
     count = sum(1 for v in best_savings.values() if v >= 100)
     print(count)

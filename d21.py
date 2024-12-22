@@ -77,7 +77,7 @@ def min_steps(start, end, layers, max_layers):
         return min_steps(start_pos, start_pos, layers - 1, max_layers)
     
     if not horizontal_move:
-        return calculate_diagonal_movement(vertical_move, None, distance_x, 0, layers, max_layers)
+        return calculate_movement_sequence(vertical_move, distance_x, layers, max_layers)
     
     if not vertical_move:
         return calculate_movement_sequence(horizontal_move, distance_y, layers, max_layers)
