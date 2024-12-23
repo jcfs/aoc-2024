@@ -5,9 +5,9 @@ input = [ line.strip() for line in open('d23.in').readlines() ]
 graph = defaultdict(set)
 
 for line in input:
-        a, b = line.split('-')
-        graph[a].add(b)
-        graph[b].add(a)
+    a, b = line.split('-')
+    graph[a].add(b)
+    graph[b].add(a)
 
 def part1():
     triangles = set()
